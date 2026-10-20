@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contractor Management</title>
+<style>
+:root {
+  --navy:#172b4d; --blue:#2563eb; --bg:#f3f6fb;
+  --text:#1e293b; --muted:#64748b; --line:#e2e8f0;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:240px;background:var(--navy);color:white;padding:24px 15px;flex-shrink:0}
+.brand{font-size:19px;font-weight:bold;padding:5px 10px 26px}
+.brand small{display:block;color:#aebed5;font-size:11px;margin-top:7px;font-weight:normal}
+.nav{display:block;width:100%;padding:13px 14px;margin:5px 0;border:0;border-radius:8px;background:transparent;color:#dce6f5;text-align:left}
+.nav:hover,.nav.active{background:#30496f;color:white}
+.main{flex:1;min-width:0}
+.topbar{background:white;padding:20px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.topbar h2{margin:0;font-size:21px}
+.topbar p{margin:6px 0 0;color:var(--muted);font-size:13px}
+.content{padding:25px;max-width:1400px;margin:auto}
+.page{display:none}.page.active{display:block}
+.heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.heading h2{margin:0;font-size:21px}
+.heading p{color:var(--muted);font-size:13px;margin:6px 0 0}
+.btn{border:0;border-radius:7px;background:var(--blue);color:white;padding:11px 15px;font-weight:bold}
+.btn.secondary{background:white;color:var(--text);border:1px solid var(--line)}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:22px}
+.card,.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:19px}
+.card .label{font-size:13px;color:var(--muted)}
+.card .value{font-size:25px;font-weight:bold;margin:13px 0 5px}
+.card .hint{font-size:12px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.panel h3{font-size:16px;margin:0 0 16px}
+.table-wrap{overflow-x:auto;background:white;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:13px}
+th{color:var(--muted);background:#f8fafc;font-weight:bold}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-block;border-radius:20px;padding:5px 9px;background:#e0e7ff;color:#3730a3;font-size:11px}
+.badge.done{background:#dcfce7;color:#166534}
+.badge.pending{background:#fef3c7;color:#92400e}
+.field{padding:11px;border:1px solid #cbd5e1;border-radius:7px;background:white;width:100%;min-width:0}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.filters .field{max-width:300px}
+.empty{text-align:center;color:var(--muted);padding:28px}
+.activity{padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}
+.activity:last-child{border-bottom:0}
+.bar-row{display:grid;grid-template-columns:100px 1fr 45px;gap:10px;align-items:center;margin:17px 0;font-size:12px}
+.bar{height:10px;background:#e8eef7;border-radius:8px;overflow:hidden}
+.bar span{display:block;height:100%;background:#3b82f6;border-radius:8px}
+.notice{font-size:12px;line-height:1.6;color:var(--muted);margin-top:18px}
+.footer{padding:22px;text-align:center;font-size:12px;color:var(--muted)}
+.mobile-menu{display:none}
+@media(max-width:900px){
+ .sidebar{width:190px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .content{padding:16px}.topbar{padding:17px}
+}
+@media(max-width:620px){
+ .layout{display:block}.sidebar{width:100%;padding:12px;display:flex;gap:6px;overflow-x:auto;align-items:center}
+ .brand{font-size:14px;padding:8px;min-width:100px}.brand small{font-size:9px}
+ .nav{width:auto;white-space:nowrap;margin:0;padding:10px;font-size:12px}
+ .topbar h2{font-size:18px}.cards{gap:9px}.card,.panel{padding:13px}
+ .card .value{font-size:20px}.grid2{grid-template-columns:1fr}
+ .content{padding:12px}.heading h2{font-size:18px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">CM <span style="color:#60a5fa">PRO</span>
+      <small>CONTRACTOR MANAGEMENT</small>
+    </div>
+    <button class="nav active" data-page="dashboard">▦ Dashboard</button>
+    <button class="nav" data-page="projects">▤ Data Proyek</button>
+    <button class="nav" data-page="workers">♙ Data Pekerja</button>
+    <button class="nav" data-page="finance">▣ Keuangan</button>
+    <button class="nav" data-page="reports">▥ Laporan</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h2 id="pageTitle">Dashboard</h2>
+        <p>Sistem Informasi Manajemen Kontraktor</p>
+      </div>
+      <span style="font-size:12px;color:#64748b">Mode demo</span>
+    </header>
+
+    <div class="content">
+      <section id="dashboard" class="page active">
+        <div class="heading">
+          <div><h2>Ringkasan Bisnis</h2><p>Pantau kondisi proyek dan keuangan Anda.</p></div>
+          <button class="btn" onclick="openPage('projects')">+ Tambah Proyek</button>
+        </div>
+        <div class="cards">
+          <div class="card"><div class="label">Total Proyek</div><div class="value" id="totalProjects">0</div><div class="hint">Seluruh proyek tercatat</div></div>
+          <div class="card"><div class="label">Proyek Berjalan</div><div class="value" id="activeProjects">0</div><div class="hint">Status dalam pengerjaan</div></div>
+          <div class="card"><div class="label">Total Pekerja</div><div class="value" id="totalWorkers">0</div><div class="hint">Pekerja terdaftar</div></div>
+          <div class="card"><div class="label">Saldo Pencatatan</div><div class="value" id="balance">Rp0</div><div class="hint">Pemasukan dikurangi pengeluaran</div></div>
+        </div>
+        <div class="grid2">
+          <div class="panel"><h3>Progres Proyek</h3><div id="progressChart"></div></div>
+          <div class="panel"><h3>Aktivitas Terbaru</h3><div id="activityList"></div></div>
+        </div>
+        <p class="notice">Catatan: ini versi awal. Data disimpan pada browser perangkat ini, bukan database online bersama.</p>
+      </section>
+
+      <section id="projects" class="page">
+        <div class="heading"><div><h2>Data Proyek</h2><p>Kelola pekerjaan dan progres proyek.</p></div>
+          <button class="btn" onclick="addProject()">+ Tambah Proyek</button></div>
+        <div class="filters"><input class="field" id="projectSearch" placeholder="Cari nama proyek..." oninput="renderProjects()"></div>
+        <div class="table-wrap"><table><thead><tr><th>Nama Proyek</th><th>Lokasi</th><th>Anggaran</th><th>Progres</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="projectTable"></tbody></table></div>
+      </section>
+
+      <section id="workers" class="page">
+        <div class="heading"><div><h2>Data Pekerja</h2><p>Kelola data mandor dan tenaga kerja.</p></div>
+          <button class="btn" onclick="addWorker()">+ Tambah Pekerja</button></div>
+        <div class="filters"><input class="field" id="workerSearch" placeholder="Cari nama atau jabatan..." oninput="renderWorkers()"></div>
+        <div class="table-wrap"><table><thead><tr><th>Nama</th><th>Jabatan</th><th>No. HP</th><th>Proyek</th><th>Aksi</th></tr></thead><tbody id="workerTable"></tbody></table></div>
+      </section>
+
+      <section id="finance" class="page">
+        <div class="heading"><div><h2>Keuangan</h2><p>Catat pemasukan dan pengeluaran proyek.</p></div>
+          <button class="btn" onclick="addTransaction()">+ Catat Transaksi</button></div>
+        <div class="cards">
+          <div class="card"><div class="label">Total Pemasukan</div><div class="value" id="income">Rp0</div></div>
+          <div class="card"><div class="label">Total Pengeluaran</div><div class="value" id="expense">Rp0</div></div>
+          <div class="card"><div class="label">Saldo</div><div class="value" id="financeBalance">Rp0</div></div>
+          <div class="card"><div class="label">Jumlah Transaksi</div><div class="value" id="transactionCount">0</div></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Keterangan</th><th>Jenis</th><th>Jumlah</th><th>Aksi</th></tr></thead><tbody id="financeTable"></tbody></table></div>
+      </section>
+
+      <section id="reports" class="page">
+        <div class="heading"><div><h2>Laporan</h2><p>Ringkasan data manajemen kontraktor.</p></div>
+          <button class="btn" onclick="exportCSV()">↓ Unduh Laporan CSV</button></div>
+        <div class="cards">
+          <div class="card"><div class="label">Total Proyek</div><div class="value" id="reportProjects">0</div></div>
+          <div class="card"><div class="label">Rata-rata Progres</div><div class="value" id="averageProgress">0%</div></div>
+          <div class="card"><div class="label">Pekerja Terdaftar</div><div class="value" id="reportWorkers">0</div></div>
+          <div class="card"><div class="label">Saldo Keuangan</div><div class="value" id="reportBalance">Rp0</div></div>
+        </div>
+        <div class="panel"><h3>Ringkasan Proyek</h3><div class="table-wrap" style="border:0"><table><thead><tr><th>Nama Proyek</th><th>Anggaran</th><th>Progres</th><th>Status</th></tr></thead><tbody id="reportTable"></tbody></table></div></div>
+      </section>
+    </div>
+    <div class="footer">Contractor Management · Versi demo</div>
+  </main>
+</div>
+
+<script>
+const KEY = "contractorManagementV1";
+const initialData = {
+  projects: [
+    {id:1,name:"Pembangunan Rumah",location:"Cikarang",budget:150000000,progress:65,status:"Berjalan"},
+    {id:2,name:"Renovasi Kantor",location:"Bekasi",budget:75000000,progress:100,status:"Selesai"}
+  ],
+  workers: [
+    {id:1,name:"Budi Santoso",role:"Mandor",phone:"081234567890",project:"Pembangunan Rumah"},
+    {id:2,name:"Andi Saputra",role:"Tukang",phone:"081298765432",project:"Pembangunan Rumah"}
+  ],
+  transactions: [
+    {id:1,date:"2026-10-01",description:"Pembayaran termin",type:"Pemasukan",amount:50000000},
+    {id:2,date:"2026-10-03",description:"Pembelian material",type:"Pengeluaran",amount:12000000}
+  ],
+  activities:["Website demo siap digunakan."]
+};
+let data;
+try {
+  data = JSON.parse(localStorage.getItem(KEY)) || structuredClone(initialData);
+} catch(e) {
+  data = JSON.parse(JSON.stringify(initialData));
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));renderAll();}
+function rupiah(n){return new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(n||0);}
+function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function addActivity(text){data.activities.unshift(new Date().toLocaleString("id-ID")+" — "+text);data.activities=data.activities.slice(0,8);}
+function openPage(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
+ document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+ document.getElementById("pageTitle").textContent=({dashboard:"Dashboard",projects:"Data Proyek",workers:"Data Pekerja",finance:"Keuangan",reports:"Laporan"})[id];
+ renderAll();
+}
+document.querySelectorAll(".nav").forEach(b=>b.addEventListener("click",()=>openPage(b.dataset.page)));
+
+function addProject(){
+ const name=prompt("Nama proyek:");if(!name?.trim())return;
+ const location=prompt("Lokasi proyek:")||"-";
+ const budget=Number(prompt("Anggaran proyek (angka Rupiah):","0"));
+ if(!Number.isFinite(budget)||budget<0){alert("Anggaran tidak valid.");return;}
+ const id=Date.now();
+ data.projects.push({id,name:name.trim(),location,budget,progress:0,status:"Berjalan"});
+ addActivity("Proyek ditambahkan: "+name);save();
+}
+function updateProject(id){
+ const p=data.projects.find(x=>x.id===id);if(!p)return;
+ const value=prompt("Masukkan progres 0 sampai 100:",p.progress);
+ if(value===null)return;
+ const n=Number(value);if(!Number.isFinite(n)||n<0||n>100){alert("Progres harus 0–100.");return;}
+ p.progress=n;p.status=n===100?"Selesai":n===0?"Belum Mulai":"Berjalan";
+ addActivity("Progres proyek diperbarui: "+p.name);save();
+}
+function deleteItem(type,id){
+ if(!confirm("Yakin ingin menghapus data ini?"))return;
+ data[type]=data[type].filter(x=>x.id!==id);addActivity("Data dihapus.");save();
+}
+function addWorker(){
+ const name=prompt("Nama pekerja:");if(!name?.trim())return;
+ const role=prompt("Jabatan (Mandor/Tukang/Admin/dll):")||"Pekerja";
+ const phone=prompt("Nomor HP:")||"-";
+ const project=prompt("Nama proyek:")||"-";
+ data.workers.push({id:Date.now(),name:name.trim(),role,phone,project});
+ addActivity("Pekerja ditambahkan: "+name);save();
+}
+function addTransaction(){
+ const type=prompt("Jenis transaksi: ketik Pemasukan atau Pengeluaran");
+ if(!type)return;
+ const normalized=type.trim().toLowerCase();
+ if(!["pemasukan","pengeluaran"].includes(normalized)){alert("Jenis harus Pemasukan atau Pengeluaran.");return;}
+ const description=prompt("Keterangan transaksi:");if(!description?.trim())return;
+ const amount=Number(prompt("Jumlah Rupiah (angka saja):","0"));
+ if(!Number.isFinite(amount)||amount<=0){alert("Jumlah harus lebih dari nol.");return;}
+ data.transactions.push({id:Date.now(),date:new Date().toISOString().slice(0,10),description:description.trim(),type:normalized==="pemasukan"?"Pemasukan":"Pengeluaran",amount});
+ addActivity("Transaksi dicatat: "+description);save();
+}
+function statusBadge(s){
+ const cls=s==="Selesai"?"done":s==="Berjalan"?"pending":"";
+ return `<span class="badge ${cls}">${escapeHTML(s)}</span>`;
+}
+function renderProjects(){
+ const q=(document.getElementById("projectSearch")?.value||"").toLowerCase();
+ const rows=data.projects.filter(p=>p.name.toLowerCase().includes(q));
+ document.getElementById("projectTable").innerHTML=rows.length?rows.map(p=>`<tr>
+ <td>${escapeHTML(p.name)}</td><td>${escapeHTML(p.location)}</td><td>${rupiah(p.budget)}</td>
+ <td><button class="btn secondary" onclick="updateProject(${p.id})">${p.progress}%</button></td>
+ <td>${statusBadge(p.status)}</td><td><button class="btn secondary" onclick="deleteItem('projects',${p.id})">Hapus</button></td></tr>`).join(""):'<tr><td colspan="6" class="empty">Belum ada proyek.</td></tr>';
+}
+function renderWorkers(){
+ const q=(document.getElementById("workerSearch")?.value||"").toLowerCase();
+ const rows=data.workers.filter(w=>(w.name+" "+w.role).toLowerCase().includes(q));
+ document.getElementById("workerTable").innerHTML=rows.length?rows.map(w=>`<tr><td>${escapeHTML(w.name)}</td><td>${escapeHTML(w.role)}</td><td>${escapeHTML(w.phone)}</td><td>${escapeHTML(w.project)}</td><td><button class="btn secondary" onclick="deleteItem('workers',${w.id})">Hapus</button></td></tr>`).join(""):'<tr><td colspan="5" class="empty">Belum ada pekerja.</td></tr>';
+}
+function renderFinance(){
+ const inc=data.transactions.filter(t=>t.type==="Pemasukan").reduce((s,t)=>s+t.amount,0);
+ const exp=data.transactions.filter(t=>t.type==="Pengeluaran").reduce((s,t)=>s+t.amount,0);
+ document.getElementById("income").textContent=rupiah(inc);
+ document.getElementById("expense").textContent=rupiah(exp);
+ document.getElementById("financeBalance").textContent=rupiah(inc-exp);
+ document.getElementById("transactionCount").textContent=data.transactions.length;
+ document.getElementById("financeTable").innerHTML=data.transactions.length?data.transactions.slice().reverse().map(t=>`<tr><td>${escapeHTML(t.date)}</td><td>${escapeHTML(t.description)}</td><td>${statusBadge(t.type)}</td><td>${rupiah(t.amount)}</td><td><button class="btn secondary" onclick="deleteItem('transactions',${t.id})">Hapus</button></td></tr>`).join(""):'<tr><td colspan="5" class="empty">Belum ada transaksi.</td></tr>';
+ return {inc,exp,balance:inc-exp};
+}
+function renderDashboard(){
+ const total=data.projects.length,active=data.projects.filter(p=>p.status==="Berjalan").length;
+ const fin=renderFinance();
+ document.getElementById("totalProjects").textContent=total;
+ document.getElementById("activeProjects").textContent=active;
+ document.getElementById("totalWorkers").textContent=data.workers.length;
+ document.getElementById("balance").textContent=rupiah(fin.balance);
+ document.getElementById("progressChart").innerHTML=total?data.projects.map(p=>`<div class="bar-row"><span>${escapeHTML(p.name)}</span><div class="bar"><span style="width:${p.progress}%"></span></div><b>${p.progress}%</b></div>`).join(""):'<div class="empty">Belum ada proyek.</div>';
+ document.getElementById("activityList").innerHTML=data.activities.length?data.activities.map(a=>`<div class="activity">${escapeHTML(a)}</div>`).join(""):'<div class="empty">Belum ada aktivitas.</div>';
+}
+function renderReports(){
+ const fin=renderFinance(),count=data.projects.length;
+ document.getElementById("reportProjects").textContent=count;
+ document.getElementById("averageProgress").textContent=(count?Math.round(data.projects.reduce((s,p)=>s+p.progress,0)/count):0)+"%";
+ document.getElementById("reportWorkers").textContent=data.workers.length;
+ document.getElementById("reportBalance").textContent=rupiah(fin.balance);
+ document.getElementById("reportTable").innerHTML=count?data.projects.map(p=>`<tr><td>${escapeHTML(p.name)}</td><td>${rupiah(p.budget)}</td><td>${p.progress}%</td><td>${statusBadge(p.status)}</td></tr>`).join(""):'<tr><td colspan="4" class="empty">Belum ada data.</td></tr>';
+}
+function renderAll(){renderProjects();renderWorkers();renderDashboard();renderReports();}
+function exportCSV(){
+ const rows=[["Nama Proyek","Lokasi","Anggaran","Progres","Status"],...data.projects.map(p=>[p.name,p.location,p.budget,p.progress+"%",p.status])];
+ const csv="\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));a.download="laporan-proyek.csv";a.click();URL.revokeObjectURL(a.href);
+}
+renderAll();
+</script>
+</body>
+</html>
